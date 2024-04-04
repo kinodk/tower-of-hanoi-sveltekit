@@ -5,8 +5,12 @@
 	type Index = number | undefined;
 	type Towers = Array<Tower>;
 
-	let moves = 0;
-	let towers: Towers = [[1, 2, 3, 4, 5], [], []];
+	let game: { towers: Towers; fromTowerIndex: Index; toTowerIndex: Index; moves: number } = {
+		towers: [[1, 2, 3, 4, 5], [], []],
+		fromTowerIndex: undefined,
+		toTowerIndex: undefined,
+		moves: 0
+	};
 
 	const moveDisk = (towers: Towers, fromTowerIndex: Index, toTowerIndex: Index): Towers => {
 		if (typeof fromTowerIndex === 'number' && typeof toTowerIndex === 'number') {
@@ -33,27 +37,24 @@
 
 		return towers;
 	};
-
-	let fromTowerIndex: Index = undefined;
-	let toTowerIndex: Index = undefined;
 </script>
 
 <div class="board">
-	{#each towers as tower, index}
+	{#each game.towers as tower, index}
 		<div class="tower">
 			<button
 				class="boardButton"
 				on:click={() => {
-					fromTowerIndex = index;
+					game.fromTowerIndex = index;
 				}}>fromTower</button
 			>
 			<button
 				class="boardButton"
 				on:click={() => {
-					toTowerIndex = index;
+					game.toTowerIndex = index;
 				}}>toTower</button
 			>
-			{#each tower as disk, index}
+			{#each tower as disk}
 				<div class="disk" style="width:{disk * 50}px">
 					{disk}
 				</div>
@@ -64,23 +65,23 @@
 
 <div class="controlCenterContainer">
 	<div class="settingsContainer">
-		<StatsContainer header="fromTowerIndex" value={fromTowerIndex} />
-		<StatsContainer header="toTowerIndex" value={toTowerIndex} />
-		<StatsContainer header="Moves" value={moves} />
+		<StatsContainer header="fromTowerIndex" value={game.fromTowerIndex} />
+		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
+		<StatsContainer header="Moves" value={game.moves} />
 	</div>
 	<button
 		class="moveButton"
 		on:click={() => {
 			if (
-				fromTowerIndex !== undefined &&
-				toTowerIndex !== undefined &&
-				fromTowerIndex !== toTowerIndex
+				game.fromTowerIndex !== undefined &&
+				game.toTowerIndex !== undefined &&
+				game.fromTowerIndex !== game.toTowerIndex
 			) {
-				towers = moveDisk(towers, fromTowerIndex, toTowerIndex);
+				game.towers = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
 
-				fromTowerIndex = undefined;
-				toTowerIndex = undefined;
-				moves += 1;
+				game.fromTowerIndex = undefined;
+				game.toTowerIndex = undefined;
+				game.moves += 1;
 			}
 		}}>MOVE</button
 	>
