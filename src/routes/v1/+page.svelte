@@ -12,30 +12,34 @@
 		moves: 0
 	};
 
-	const moveDisk = (towers: Towers, fromTowerIndex: Index, toTowerIndex: Index): Towers => {
-		if (typeof fromTowerIndex === 'number' && typeof toTowerIndex === 'number') {
-			let fromTower = towers[fromTowerIndex];
-			let toTower = towers[toTowerIndex];
-			if (
-				fromTower.length !== 0 &&
-				(toTower.length === 0 || (toTower.length > 0 && fromTower[0] < toTower[0]))
-			) {
-				let movedDisk = fromTower.shift();
-				if (typeof movedDisk === 'number') {
-					toTower.unshift(movedDisk);
-					return towers;
-				}
-				console.log(toTower);
-			} else {
-				console.log('error');
-				return towers;
-			}
-		} else {
+	const moveDisk = (towers: Towers, fromTowerIndex: Index, toTowerIndex: Index): boolean => {
+		if (typeof fromTowerIndex !== 'number' || typeof toTowerIndex !== 'number') {
 			console.log('not an index');
-			return towers;
+			return false;
 		}
 
-		return towers;
+		const fromTower = towers[fromTowerIndex];
+		const toTower = towers[toTowerIndex];
+
+		if (fromTower.length === 0) {
+			console.log('error: empty source tower');
+			return false;
+		}
+
+		if (toTower.length > 0 && fromTower[0] >= toTower[0]) {
+			console.log('error: cannot move larger disk onto smaller disk');
+			return false;
+		}
+
+		const movedDisk = fromTower.shift();
+
+		if (typeof movedDisk !== 'number') {
+			console.log('error: failed to move disk');
+			return false;
+		}
+
+		toTower.unshift(movedDisk);
+		return true;
 	};
 </script>
 
@@ -77,11 +81,13 @@
 				game.toTowerIndex !== undefined &&
 				game.fromTowerIndex !== game.toTowerIndex
 			) {
-				game.towers = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
+				let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
 
-				game.fromTowerIndex = undefined;
-				game.toTowerIndex = undefined;
-				game.moves += 1;
+				if (success) {
+					game.fromTowerIndex = undefined;
+					game.toTowerIndex = undefined;
+					game.moves += 1;
+				}
 			}
 		}}>MOVE</button
 	>
