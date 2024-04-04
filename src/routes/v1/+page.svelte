@@ -62,10 +62,15 @@
     <button 
         class="moveButton"
         on:click={()=>{
-        towers = moveDisk(towers,fromTowerIndex,toTowerIndex);
-        fromTowerIndex = undefined;
-        toTowerIndex = undefined;
-        moves += 1;}}
+        if (fromTowerIndex !== undefined &&
+            toTowerIndex !== undefined &&
+            fromTowerIndex !== toTowerIndex) {
+            towers = moveDisk(towers,fromTowerIndex,toTowerIndex);
+            
+            fromTowerIndex = undefined;
+            toTowerIndex = undefined;
+            moves += 1;}
+        }}
         >MOVE</button>
 </div>
 
