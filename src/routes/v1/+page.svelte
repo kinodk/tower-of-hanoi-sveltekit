@@ -50,12 +50,39 @@
 				class="boardButton"
 				on:click={() => {
 					game.fromTowerIndex = index;
+
+					if (
+						game.fromTowerIndex !== undefined &&
+						game.toTowerIndex !== undefined &&
+						game.toTowerIndex !== game.fromTowerIndex
+					) {
+						let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
+
+						if (success) {
+							game.fromTowerIndex = undefined;
+							game.toTowerIndex = undefined;
+							game.moves += 1;
+						}
+					}
 				}}>fromTower</button
 			>
 			<button
 				class="boardButton"
 				on:click={() => {
 					game.toTowerIndex = index;
+					if (
+						game.fromTowerIndex !== undefined &&
+						game.toTowerIndex !== undefined &&
+						game.toTowerIndex !== game.fromTowerIndex
+					) {
+						let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
+
+						if (success) {
+							game.fromTowerIndex = undefined;
+							game.toTowerIndex = undefined;
+							game.moves += 1;
+						}
+					}
 				}}>toTower</button
 			>
 			{#each tower as disk}
@@ -73,24 +100,6 @@
 		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
 		<StatsContainer header="Moves" value={game.moves} />
 	</div>
-	<button
-		class="moveButton"
-		on:click={() => {
-			if (
-				game.fromTowerIndex !== undefined &&
-				game.toTowerIndex !== undefined &&
-				game.fromTowerIndex !== game.toTowerIndex
-			) {
-				let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
-
-				if (success) {
-					game.fromTowerIndex = undefined;
-					game.toTowerIndex = undefined;
-					game.moves += 1;
-				}
-			}
-		}}>MOVE</button
-	>
 </div>
 
 <style>
@@ -131,20 +140,12 @@
 		align-items: center;
 		width: 100vw;
 		border: 1px solid black;
-		height: 30vh;
-	}
-
-	.moveButton {
-		height: 48%;
-		width: 200px;
-		font-size: large;
-		font-weight: bolder;
-		border-radius: 10%;
+		height: 20vh;
 	}
 
 	.settingsContainer {
 		display: flex;
-		height: 48%;
+		height: 100%;
 		gap: 5px;
 	}
 </style>
