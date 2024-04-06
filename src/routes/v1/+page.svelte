@@ -12,14 +12,14 @@
 		moves: 0
 	};
 
-	const moveDisk = (gameObject: typeof game): boolean => {
-		let towers = gameObject.towers
-		let fromTowerIndex = gameObject.fromTowerIndex
-		let toTowerIndex = gameObject.toTowerIndex
+	const moveDisk = (gameObject: typeof game): boolean | null => {
+		let towers = gameObject.towers;
+		let fromTowerIndex = gameObject.fromTowerIndex;
+		let toTowerIndex = gameObject.toTowerIndex;
 
 		if (typeof fromTowerIndex !== 'number' || typeof toTowerIndex !== 'number') {
 			console.log('not an index');
-			return false;
+			return null;
 		}
 
 		const fromTower = towers[fromTowerIndex];
@@ -27,15 +27,11 @@
 
 		if (fromTower.length === 0) {
 			console.log('error: empty source tower');
-			game.fromTowerIndex = undefined
-			game.toTowerIndex = undefined
 			return false;
 		}
 
 		if (toTower.length > 0 && fromTower[0] >= toTower[0]) {
 			console.log('error: cannot move larger disk onto smaller disk');
-			game.fromTowerIndex = undefined
-			game.toTowerIndex = undefined
 			return false;
 		}
 
@@ -43,15 +39,10 @@
 
 		if (typeof movedDisk !== 'number') {
 			console.log('error: failed to move disk');
-			game.fromTowerIndex = undefined
-			game.toTowerIndex = undefined
 			return false;
 		}
 
 		toTower.unshift(movedDisk);
-		game.fromTowerIndex = undefined
-		game.toTowerIndex = undefined
-		game.moves += 1
 		return true;
 	};
 
@@ -70,7 +61,18 @@
 <svelte:window
 	on:keydown|preventDefault={(e) => {
 		keyAssignTowerIndex(e);
-		let success = moveDisk(game)
+		let success = moveDisk(game);
+
+		if (success === true) {
+			game.fromTowerIndex = undefined;
+			game.toTowerIndex = undefined;
+			game.moves += 1;
+		}
+
+		if (success === false) {
+			game.fromTowerIndex = undefined;
+			game.toTowerIndex = undefined;
+		}
 	}}
 />
 
