@@ -27,11 +27,15 @@
 
 		if (fromTower.length === 0) {
 			console.log('error: empty source tower');
+			game.fromTowerIndex = undefined
+			game.toTowerIndex = undefined
 			return false;
 		}
 
 		if (toTower.length > 0 && fromTower[0] >= toTower[0]) {
 			console.log('error: cannot move larger disk onto smaller disk');
+			game.fromTowerIndex = undefined
+			game.toTowerIndex = undefined
 			return false;
 		}
 
@@ -39,56 +43,40 @@
 
 		if (typeof movedDisk !== 'number') {
 			console.log('error: failed to move disk');
+			game.fromTowerIndex = undefined
+			game.toTowerIndex = undefined
 			return false;
 		}
 
 		toTower.unshift(movedDisk);
+		game.fromTowerIndex = undefined
+		game.toTowerIndex = undefined
+		game.moves += 1
 		return true;
+	};
+
+	const keyAssignTowerIndex = (e: KeyboardEvent) => {
+		if ([1, 2, 3].includes(+e.key)) {
+			if (game.fromTowerIndex !== undefined) {
+				game.toTowerIndex = +e.key - 1;
+			}
+			if (game.fromTowerIndex === undefined) {
+				game.fromTowerIndex = +e.key - 1;
+			}
+		}
 	};
 </script>
 
+<svelte:window
+	on:keydown|preventDefault={(e) => {
+		keyAssignTowerIndex(e);
+		let success = moveDisk(game)
+	}}
+/>
+
 <div class="board">
-	{#each game.towers as tower, index}
+	{#each game.towers as tower}
 		<div class="tower">
-			<button
-				class="boardButton"
-				on:click={() => {
-					game.fromTowerIndex = index;
-
-					if (
-						game.fromTowerIndex !== undefined &&
-						game.toTowerIndex !== undefined &&
-						game.toTowerIndex !== game.fromTowerIndex
-					) {
-						let success = moveDisk(game);
-
-						if (success) {
-							game.fromTowerIndex = undefined;
-							game.toTowerIndex = undefined;
-							game.moves += 1;
-						}
-					}
-				}}>fromTower</button
-			>
-			<button
-				class="boardButton"
-				on:click={() => {
-					game.toTowerIndex = index;
-					if (
-						game.fromTowerIndex !== undefined &&
-						game.toTowerIndex !== undefined &&
-						game.toTowerIndex !== game.fromTowerIndex
-					) {
-						let success = moveDisk(game);
-
-						if (success) {
-							game.fromTowerIndex = undefined;
-							game.toTowerIndex = undefined;
-							game.moves += 1;
-						}
-					}
-				}}>toTower</button
-			>
 			{#each tower as disk}
 				<div class="disk" style="width:{disk * 50}px">
 					{disk}
@@ -107,25 +95,20 @@
 </div>
 
 <style>
-	.boardButton {
-		margin-bottom: 5px;
-		width: 100px;
-		height: 40px;
-		border-radius: 10px;
-	}
-
 	.board {
 		display: flex;
 		margin-top: 0px;
 		width: 100vw;
 		justify-content: space-between;
 		border: 2px solid black;
+		height: 50vh;
 	}
 
 	.tower {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		align-self: flex-end;
 		border: 2px black;
 		padding: 20px;
 		width: 33%;
