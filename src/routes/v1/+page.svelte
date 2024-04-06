@@ -12,7 +12,11 @@
 		moves: 0
 	};
 
-	const moveDisk = (towers: Towers, fromTowerIndex: Index, toTowerIndex: Index): boolean => {
+	const moveDisk = (gameObject: typeof game): boolean => {
+		let towers = gameObject.towers
+		let fromTowerIndex = gameObject.fromTowerIndex
+		let toTowerIndex = gameObject.toTowerIndex
+
 		if (typeof fromTowerIndex !== 'number' || typeof toTowerIndex !== 'number') {
 			console.log('not an index');
 			return false;
@@ -56,7 +60,7 @@
 						game.toTowerIndex !== undefined &&
 						game.toTowerIndex !== game.fromTowerIndex
 					) {
-						let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
+						let success = moveDisk(game);
 
 						if (success) {
 							game.fromTowerIndex = undefined;
@@ -75,7 +79,7 @@
 						game.toTowerIndex !== undefined &&
 						game.toTowerIndex !== game.fromTowerIndex
 					) {
-						let success = moveDisk(game.towers, game.fromTowerIndex, game.toTowerIndex);
+						let success = moveDisk(game);
 
 						if (success) {
 							game.fromTowerIndex = undefined;
