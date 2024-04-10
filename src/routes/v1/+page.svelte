@@ -1,5 +1,6 @@
 <script lang="ts">
 	import StatsContainer from './StatsContainer.svelte';
+	import Stopwatch from './Stopwatch.svelte';
 
 	type Index = number | undefined;
 	type GameType = {
@@ -140,6 +141,7 @@
 		<StatsContainer header="fromTowerIndex" value={game.fromTowerIndex} />
 		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
 		<StatsContainer header="Moves" value={game.moves} />
+		<Stopwatch />
 	</div>
 </div>
 

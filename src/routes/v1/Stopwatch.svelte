@@ -1,4 +1,5 @@
 <script lang="ts">
+	import StatsContainer from './StatsContainer.svelte';
 	let startTime: number;
 	let elapsedTime: number;
 
@@ -19,4 +20,4 @@
 
 <svelte:document on:keydown|once={startStopwatch} />
 
-{formattedElapsedTime}
+<StatsContainer header="Time Elapsed" value={formattedElapsedTime}/>
