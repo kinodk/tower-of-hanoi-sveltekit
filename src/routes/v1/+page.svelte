@@ -1,21 +1,64 @@
 <script lang="ts">
 	import StatsContainer from './StatsContainer.svelte';
 
-	type Tower = Array<number>;
 	type Index = number | undefined;
-	type Towers = Array<Tower>;
+	type GameType = {
+		poles: number;
+		disks: number;
+		board: number[][];
+		targetPole: number | undefined;
 
-	let game: { towers: Towers; fromTowerIndex: Index; toTowerIndex: Index; moves: number } = {
-		towers: [[1, 2, 3, 4, 5], [], []],
-		fromTowerIndex: undefined,
-		toTowerIndex: undefined,
-		moves: 0
+		fromTowerIndex: Index;
+		toTowerIndex: Index;
+		moves: number;
+
+		initializeBoard: Function;
+		gameFinished: Function;
 	};
 
-	const moveDisk = (gameObject: typeof game): boolean | null => {
-		let towers = gameObject.towers;
-		let fromTowerIndex = gameObject.fromTowerIndex;
-		let toTowerIndex = gameObject.toTowerIndex;
+	
+	let game: GameType = {
+		poles: 3,
+		disks: 3,
+		board: [],
+		targetPole: undefined,
+		
+		fromTowerIndex: undefined,
+		toTowerIndex: undefined,
+		moves: 0,
+		
+		initializeBoard: function () {
+			for (let i = 1; i <= this.poles; i++) {
+				this.board.push([]);
+			}
+			
+			for (let i = 1; i <= this.disks; i++) {
+				this.board[0].push(i);
+			}
+		},
+		
+		gameFinished: function () {
+			let tower: number[] = [];
+			
+			for (let i = 1; i <= this.disks; i++) {
+				tower.push(i);
+			}
+			
+			if (this.targetPole !== undefined) {
+				return JSON.stringify(this.board[this.targetPole]) === JSON.stringify(tower)
+			} else {
+				return this.board.slice(1).some((value) => JSON.stringify(value) === JSON.stringify(tower))
+			}
+		}
+	};
+	
+	let done = false;
+	game.initializeBoard();
+
+	const moveDisk = (): boolean | null => {
+		let towers = game.board;
+		let fromTowerIndex = game.fromTowerIndex;
+		let toTowerIndex = game.toTowerIndex;
 
 		if (typeof fromTowerIndex !== 'number' || typeof toTowerIndex !== 'number') {
 			console.log('not an index');
@@ -61,25 +104,29 @@
 <svelte:window
 	on:keydown|preventDefault={(e) => {
 		keyAssignTowerIndex(e);
-		let success = moveDisk(game);
+		if (typeof game.fromTowerIndex === 'number' && typeof game.toTowerIndex === 'number') {
+			let success = moveDisk();
 
-		if (success === true) {
-			game.fromTowerIndex = undefined;
-			game.toTowerIndex = undefined;
-			game.moves += 1;
-		}
+			done = game.gameFinished();
 
-		if (success === false) {
-			game.fromTowerIndex = undefined;
-			game.toTowerIndex = undefined;
+			if (success === true) {
+				game.fromTowerIndex = undefined;
+				game.toTowerIndex = undefined;
+				game.moves += 1;
+			}
+
+			if (success === false) {
+				game.fromTowerIndex = undefined;
+				game.toTowerIndex = undefined;
+			}
 		}
 	}}
 />
 
 <div class="board">
-	{#each game.towers as tower}
-		<div class="tower">
-			{#each tower as disk}
+	{#each game.board as pole}
+		<div class="pole">
+			{#each pole as disk}
 				<div class="disk" style="width:{disk * 50}px">
 					{disk}
 				</div>
@@ -106,7 +153,7 @@
 		height: 50vh;
 	}
 
-	.tower {
+	.pole {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
