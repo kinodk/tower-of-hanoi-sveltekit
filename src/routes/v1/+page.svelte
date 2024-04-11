@@ -14,7 +14,7 @@
 		moves: number;
 
 		initializeBoard: Function;
-		gameFinished: Function;
+		checkIfFinished: Function;
 	};
 
 	
@@ -38,7 +38,7 @@
 			}
 		},
 		
-		gameFinished: function () {
+		checkIfFinished: function () {
 			let tower: number[] = [];
 			
 			for (let i = 1; i <= this.disks; i++) {
@@ -53,7 +53,7 @@
 		}
 	};
 	
-	let done = false;
+	let gameFinished = false;
 	game.initializeBoard();
 
 	const moveDisk = (): boolean | null => {
@@ -108,7 +108,7 @@
 		if (typeof game.fromTowerIndex === 'number' && typeof game.toTowerIndex === 'number') {
 			let success = moveDisk();
 
-			done = game.gameFinished();
+			gameFinished = game.checkIfFinished();
 
 			if (success === true) {
 				game.fromTowerIndex = undefined;
@@ -141,7 +141,7 @@
 		<StatsContainer header="fromTowerIndex" value={game.fromTowerIndex} />
 		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
 		<StatsContainer header="Moves" value={game.moves} />
-		<Stopwatch />
+		<Stopwatch bind:gameFinished={gameFinished}/>
 	</div>
 </div>
 

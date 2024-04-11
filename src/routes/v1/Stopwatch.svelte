@@ -1,7 +1,10 @@
 <script lang="ts">
 	import StatsContainer from './StatsContainer.svelte';
+
 	let startTime: number;
 	let elapsedTime: number;
+	let intervalId: number;
+	export let gameFinished: boolean = false;
 
 	$: hours = String(Math.floor(elapsedTime / 1000 / 60 / 60)).padStart(2, '0') + ':';
 	$: minutes = String(Math.floor(elapsedTime / 1000 / 60) % 60).padStart(2, '0') + ':';
@@ -11,13 +14,19 @@
 
 	const startStopwatch = () => {
 		startTime = Date.now();
-		setInterval(() => {
+		intervalId = setInterval(() => {
 			let endTime = Date.now();
 			elapsedTime = endTime - startTime;
 		});
 	};
+
+	$: {
+		if (gameFinished) {
+			clearInterval(intervalId);
+		}
+	}
 </script>
 
 <svelte:document on:keydown|once={startStopwatch} />
 
-<StatsContainer header="Time Elapsed" value={formattedElapsedTime}/>
+<StatsContainer header="Time Elapsed" value={formattedElapsedTime} />
