@@ -10,7 +10,7 @@
 		disks: number;
 		board: number[][];
 		targetPole: number | undefined;
-		gameFinished : boolean,
+		gameFinished: boolean;
 
 		fromTowerIndex: Index;
 		toTowerIndex: Index;
@@ -21,53 +21,52 @@
 		resetGame: Function;
 	};
 
-	
 	let game: GameType = {
 		poles: 3,
 		disks: 3,
 		board: [],
 		targetPole: undefined,
 		gameFinished: false,
-		
+
 		fromTowerIndex: undefined,
 		toTowerIndex: undefined,
 		moves: 0,
-		
+
 		initializeBoard: function () {
-			this.board = []
+			this.board = [];
 			for (let i = 1; i <= this.poles; i++) {
 				this.board.push([]);
 			}
-			
+
 			for (let i = 1; i <= this.disks; i++) {
 				this.board[0].push(i);
 			}
 		},
-		
+
 		checkIfFinished: function () {
 			let tower: number[] = [];
-			
+
 			for (let i = 1; i <= this.disks; i++) {
 				tower.push(i);
 			}
-			
+
 			if (this.targetPole !== undefined) {
-				return JSON.stringify(this.board[this.targetPole]) === JSON.stringify(tower)
+				return JSON.stringify(this.board[this.targetPole]) === JSON.stringify(tower);
 			} else {
-				return this.board.slice(1).some((value) => JSON.stringify(value) === JSON.stringify(tower))
+				return this.board.slice(1).some((value) => JSON.stringify(value) === JSON.stringify(tower));
 			}
 		},
 
 		resetGame: function () {
-			resetCounter += 1
-			game.initializeBoard()
-			game.gameFinished = false
-			game.moves = 0
-			game.fromTowerIndex = undefined
-			game.toTowerIndex = undefined
+			resetCounter += 1;
+			game.initializeBoard();
+			game.gameFinished = false;
+			game.moves = 0;
+			game.fromTowerIndex = undefined;
+			game.toTowerIndex = undefined;
 		}
 	};
-	
+
 	game.initializeBoard();
 
 	const moveDisk = (): boolean | null => {
@@ -118,7 +117,7 @@
 
 <svelte:window
 	on:keydown|preventDefault={(e) => {
-		if (e.key == "r") {
+		if (e.key == 'r') {
 			game.resetGame();
 		} else {
 			keyAssignTowerIndex(e);
@@ -141,7 +140,7 @@
 		}
 	}}
 />
-		
+
 <div class="board">
 	{#each game.board as pole}
 		<div class="pole">
@@ -160,7 +159,7 @@
 		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
 		<StatsContainer header="Moves" value={game.moves} />
 		{#key resetCounter}
-		<Stopwatch bind:gameFinished={game.gameFinished}/>
+			<Stopwatch bind:gameFinished={game.gameFinished} />
 		{/key}
 	</div>
 </div>
