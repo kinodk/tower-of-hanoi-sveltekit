@@ -1,6 +1,6 @@
-<script>
-	export let header;
-	export let value;
+<script lang="ts">
+	export let header: any;
+	export let value: any;
 </script>
 
 <div class="container">
