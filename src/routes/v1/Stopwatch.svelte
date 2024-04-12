@@ -3,7 +3,7 @@
 
 	let startTime: number;
 	let elapsedTime: number;
-	let intervalId: number;
+	let intervalId: number | undefined;
 	export let gameFinished: boolean = false;
 
 	$: hours = String(Math.floor(elapsedTime / 1000 / 60 / 60)).padStart(2, '0') + ':';
@@ -23,10 +23,17 @@
 	$: {
 		if (gameFinished) {
 			clearInterval(intervalId);
+			intervalId = undefined;
 		}
 	}
 </script>
 
-<svelte:document on:keydown|once={startStopwatch} />
+<svelte:document
+	on:keydown={() => {
+		if (intervalId === undefined) {
+			startStopwatch();
+		}
+	}}
+/>
 
 <StatsContainer header="Time Elapsed" value={formattedElapsedTime} />

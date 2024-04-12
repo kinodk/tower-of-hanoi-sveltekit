@@ -2,12 +2,15 @@
 	import StatsContainer from './StatsContainer.svelte';
 	import Stopwatch from './Stopwatch.svelte';
 
+	let resetCounter: number = 0;
+
 	type Index = number | undefined;
 	type GameType = {
 		poles: number;
 		disks: number;
 		board: number[][];
 		targetPole: number | undefined;
+		gameFinished : boolean,
 
 		fromTowerIndex: Index;
 		toTowerIndex: Index;
@@ -15,6 +18,7 @@
 
 		initializeBoard: Function;
 		checkIfFinished: Function;
+		resetGame: Function;
 	};
 
 	
@@ -23,12 +27,14 @@
 		disks: 3,
 		board: [],
 		targetPole: undefined,
+		gameFinished: false,
 		
 		fromTowerIndex: undefined,
 		toTowerIndex: undefined,
 		moves: 0,
 		
 		initializeBoard: function () {
+			this.board = []
 			for (let i = 1; i <= this.poles; i++) {
 				this.board.push([]);
 			}
@@ -50,10 +56,18 @@
 			} else {
 				return this.board.slice(1).some((value) => JSON.stringify(value) === JSON.stringify(tower))
 			}
+		},
+
+		resetGame: function () {
+			resetCounter += 1
+			game.initializeBoard()
+			game.gameFinished = false
+			game.moves = 0
+			game.fromTowerIndex = undefined
+			game.toTowerIndex = undefined
 		}
 	};
 	
-	let gameFinished = false;
 	game.initializeBoard();
 
 	const moveDisk = (): boolean | null => {
@@ -104,26 +118,30 @@
 
 <svelte:window
 	on:keydown|preventDefault={(e) => {
-		keyAssignTowerIndex(e);
-		if (typeof game.fromTowerIndex === 'number' && typeof game.toTowerIndex === 'number') {
-			let success = moveDisk();
+		if (e.key == "r") {
+			game.resetGame();
+		} else {
+			keyAssignTowerIndex(e);
+			if (typeof game.fromTowerIndex === 'number' && typeof game.toTowerIndex === 'number') {
+				let success = moveDisk();
 
-			gameFinished = game.checkIfFinished();
+				game.gameFinished = game.checkIfFinished();
 
-			if (success === true) {
-				game.fromTowerIndex = undefined;
-				game.toTowerIndex = undefined;
-				game.moves += 1;
-			}
+				if (success === true) {
+					game.fromTowerIndex = undefined;
+					game.toTowerIndex = undefined;
+					game.moves += 1;
+				}
 
-			if (success === false) {
-				game.fromTowerIndex = undefined;
-				game.toTowerIndex = undefined;
+				if (success === false) {
+					game.fromTowerIndex = undefined;
+					game.toTowerIndex = undefined;
+				}
 			}
 		}
 	}}
 />
-
+		
 <div class="board">
 	{#each game.board as pole}
 		<div class="pole">
@@ -141,7 +159,9 @@
 		<StatsContainer header="fromTowerIndex" value={game.fromTowerIndex} />
 		<StatsContainer header="toTowerIndex" value={game.toTowerIndex} />
 		<StatsContainer header="Moves" value={game.moves} />
-		<Stopwatch bind:gameFinished={gameFinished}/>
+		{#key resetCounter}
+		<Stopwatch bind:gameFinished={game.gameFinished}/>
+		{/key}
 	</div>
 </div>
 
